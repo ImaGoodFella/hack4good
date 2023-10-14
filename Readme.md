@@ -38,7 +38,9 @@ See definition by
 
 ### Deliverables
 TODO
-- Complete dataset with predictions
+- Pure image prediction using the pre-trained convnext (newer resnet50) or similar model?
+- Separate weather feature prediction
+- Combining the two?
 - Model (kedro + mlflow?)
 - Report (who will read it?)
 - Presentation Hack4Good
