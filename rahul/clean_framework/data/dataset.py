@@ -13,12 +13,13 @@ from sklearn.utils import class_weight
 
 class CustomImageDataset(Dataset):
     
-    def __init__(self, img_dir, csv_file, label_name, join_name, class_to_idx, transform=None, target_transform=None):
+    def __init__(self, img_dir, feature_df, feature_columns, label_column, join_column, class_to_idx, transform=None, target_transform=None):
         self.img_dir = img_dir
-        self.csv_file = csv_file
-        self.label_name = label_name
-        self.join_name = join_name # column used to join img_dir and csv_file
+        self.feature_df = feature_df
+        self.label_name = label_column
+        self.join_name = join_column # column used to join img_dir and csv_file
         self.transform = transform
+        self.feature_columns = feature_columns
         self.target_transform = target_transform
 
         # Integer class mapping: Label classes -> [0, 1, ..., num(labels) - 1] for pytorch
@@ -26,15 +27,18 @@ class CustomImageDataset(Dataset):
         self.num_classes = len(list(class_to_idx.values()))
 
     def __len__(self):
-        return self.csv_file.shape[0]
+        return self.feature_df.shape[0]
 
     def __getitem__(self, idx):
         # Load image
-        img_path = os.path.join(self.img_dir, self.csv_file.iloc[idx][self.join_name])
+        img_path = os.path.join(self.img_dir, self.feature_df.iloc[idx][self.join_name])
         image = Image.open(img_path)
 
+        # Load time series features if they exist, otherwise just use a constant value of 1
+        ts_features = torch.tensor(self.feature_df.iloc[idx][self.feature_columns].to_numpy(dtype=np.float32)) if len(self.feature_columns) > 0 else 1
+
         # Load Label
-        label = self.class_to_idx[self.csv_file.iloc[idx][self.label_name]]
+        label = self.class_to_idx[self.feature_df.iloc[idx][self.label_name]]
 
         # Apply transformations
         if self.transform:
@@ -42,9 +46,9 @@ class CustomImageDataset(Dataset):
         if self.target_transform:
             label = self.target_transform(label)
             
-        return image, label
+        return image, ts_features, label
 
     def calculate_class_weights(self):
-        y_vals = self.csv_file[self.label_name].apply(lambda x: self.class_to_idx[x])
+        y_vals = self.feature_df[self.label_name].apply(lambda x: self.class_to_idx[x])
         cw = class_weight.compute_class_weight('balanced', classes=y_vals.unique(), y=y_vals).astype(np.float32)
         return torch.tensor(cw)

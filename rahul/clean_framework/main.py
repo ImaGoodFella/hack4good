@@ -1,30 +1,63 @@
 import pandas as pd
+import torch
+
 from data.utils import get_train_val_test_dataloaders
+from data.feature_extractor import get_time_series_features_df
+from models.basic_models import get_basic_img_model
+from callbacks.training import train_step
+from callbacks.evaluation import evaluate
 
 # Data path configuration
 data_path = "/home/rasteiger/datasets/hack4good/"
 img_dir = data_path + "images"
-csv_path = data_path + "labels.csv"
+label_path = data_path + "labels.csv"
 
 # Reading the csv file
-csv_file = pd.read_csv(csv_path)
+label_df = pd.read_csv(label_path)
 
 # Setting the labels and join columns
-csv_file['is_damage'] = (csv_file['extent'] >= 20).astype(int)
+label_df['is_damage'] = (label_df['extent'] >= 20).astype(int)
 label_column = 'is_damage'
 join_column = 'filename'
 split_column = 'farmer_id'
 
-img_size = 224
+# Get time series features dataframe
+feature_df, feature_columns = get_time_series_features_df(label_df=label_df, num_features=0)
 
-train_loader, val_loader, test_loader = get_train_val_test_dataloaders(img_size=img_size, img_dir=img_dir, feature_df=csv_file,
+# Define image size for transformations for loading the data
+img_size = 224
+train_loader, val_loader, test_loader = get_train_val_test_dataloaders(img_size=img_size, img_dir=img_dir, feature_df=feature_df, feature_columns=feature_columns,
                                                                        label_column=label_column, join_column=join_column, split_column=split_column,
                                                                        split_sizes=[0.8, 0.1, 0.1], batch_size=32, num_workers=64, random_state=42)
 
 
-for x in [train_loader, val_loader, test_loader]:
-    print(len(x.dataset))
+# Define Model
+num_classes = train_loader.dataset.num_classes
+num_ts_features = len(feature_columns)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = get_basic_img_model(num_classes=num_classes, num_ts_features=num_ts_features, device=device, use_multi_gpu=True)
 
+# Training parameters
+optimizer = torch.optim.Adam(model.parameters(), lr=1e-5, weight_decay=0.00)
+class_weights = train_loader.dataset.calculate_class_weights().to(device)
+criterion = torch.nn.CrossEntropyLoss(weight=class_weights)
+
+# Model training
+best_loss = 1e20
+num_epochs = 20
+
+print("Starting to train model:")
+for epoch in range(num_epochs):
+    
+    train_step(model=model, data_loader=train_loader, criterion=criterion, optimizer=optimizer, epoch=epoch, device=device)    
+    loss = evaluate(model=model, data_loader=val_loader, criterion=criterion, epoch=epoch, device=device, is_test=False)
+    
+    if (loss < best_loss):
+        best_loss = loss
+        #torch.save(model, 'current_best_model.pt')
+
+# Model evluation on test set
+evaluate(model=model, data_loader=test_loader, criterion=criterion, device=device, is_test=True)
 
 
 
