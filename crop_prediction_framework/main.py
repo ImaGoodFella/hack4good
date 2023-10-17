@@ -57,10 +57,11 @@ class_weights = train_loader.dataset.calculate_class_weights().to(device)
 criterion = torch.nn.CrossEntropyLoss(weight=class_weights)
 
 # Model training
-best_loss = 1e20
-num_epochs = 20
 
 def main():
+    best_loss = 1e20
+    num_epochs = 20
+
     print("Starting to train model:")
     for epoch in range(num_epochs):
         
