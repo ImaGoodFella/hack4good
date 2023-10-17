@@ -38,7 +38,7 @@ split_column = 'farmer_id'
 
 # Get time series features dataframe
 feature_df, feature_columns = get_time_series_features_df(label_df=label_df, path_weather_data=path_weather_data, 
-                                                          use_cache=True, cache_file=cache_file)    
+                                                          join_column=join_column, use_cache=True, cache_file=cache_file)    
 
 # Define image size for transformations for loading the data
 img_size = 224

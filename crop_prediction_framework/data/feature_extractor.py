@@ -6,7 +6,7 @@ import os
 from tqdm import tqdm
 tqdm.pandas()
 
-def get_time_series_features_df(label_df, path_weather_data, use_cache=True, cache_file=None):
+def get_time_series_features_df(label_df, join_column, path_weather_data, use_cache=True, cache_file=None):
     
     # use cache features if saved
     if use_cache and os.path.isfile(cache_file):
@@ -20,7 +20,7 @@ def get_time_series_features_df(label_df, path_weather_data, use_cache=True, cac
     weather_data = df.to_xarray()
 
     def apply_extract(row):
-        return pd.Series(extract_features(row['filename'], weather_data, label_df))
+        return pd.Series(extract_features(row[join_column], weather_data, label_df, join_column))
 
     ts_df = label_df.progress_apply(apply_extract, axis=1)
     ts_df.rename(lambda x: 'ts_columns' + str(x), axis=1)
@@ -31,14 +31,14 @@ def get_time_series_features_df(label_df, path_weather_data, use_cache=True, cac
 
     return label_df, ts_columns
 
-def get_coords(img_name, labels):
-    row = labels[labels["filename"] == img_name]
+def get_coords(img_name, labels, join_column):
+    row = labels[labels[join_column] == img_name]
     return (row.iloc[0]['lat'], row.iloc[0]['lon'])
 
-def extract_features(img_name, weather_data, labels):
+def extract_features(img_name, weather_data, labels, join_column):
     # get relevant data
-    (lon, lat) = get_coords(img_name, labels)
-    date = labels[labels["filename"] == img_name].iloc[0]['date']
+    (lon, lat) = get_coords(img_name, labels, join_column)
+    date = labels[labels[join_column] == img_name].iloc[0]['date']
     df = weather_data.sel(latitude= lat, longitude= lon, method='nearest').sel(time = slice(date, date + pd.DateOffset(months=1))).to_dataframe()
     
     # extract features
