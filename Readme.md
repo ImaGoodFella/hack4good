@@ -28,6 +28,7 @@ Here are some resources to get and process the remote sensing and meteorological
 - Sentinel-2 remote sensing data: https://sentinels.copernicus.eu/web/sentinel/missions/sentinel-2/data-products
 - Koen's repository containing code to get the data (for an old version of the extended images dataset): https://github.com/khufkens/eyes_on_the_ground
 
+[Project proposal](https://drive.google.com/file/d/1gwTF3iznM-J_7-i5muZcxN1s0A5e9Plr/view?usp=drive_link) (restricted access)
  
 [More info](PDF here?)
 
