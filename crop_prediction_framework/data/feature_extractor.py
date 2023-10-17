@@ -34,6 +34,27 @@ def get_time_series_features_df(label_df, join_column, path_weather_data, use_ca
 def get_coords(img_name, labels, join_column):
     row = labels[labels[join_column] == img_name]
     return (row.iloc[0]['lat'], row.iloc[0]['lon'])
+    
+#function that returns number of 'spells' of a parameter
+def get_spells(data,param:str,value,higher:bool,spell:int):
+    
+    #value: threshold to consider
+    #higher: whether we want to be higher or lower than the threshold
+    #spell: how many days do we consider a spell
+
+    d = data[param].values.reshape((-1,24)) #we consider the daily averages (technically not over a day but 24 hours)
+    d = np.mean(d, axis = 1)    
+    d = np.where(d>value,1,0)     
+    n = len(d)
+    if n == 0: 
+        return (None)
+    else:
+        y = d[1:] != d[:-1]               
+        i = np.append(np.where(y), n - 1) 
+        z = np.diff(np.append(-1, i))
+        res = z[d[i]==higher] 
+        numspells = sum(k >= spell for k in res)
+        return (numspells)
 
 def extract_features(img_name, weather_data, labels, join_column):
     # get relevant data
