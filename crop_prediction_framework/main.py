@@ -1,5 +1,7 @@
 import pandas as pd
+import time
 import torch
+import os
 
 from data.utils import get_train_val_test_dataloaders
 from data.feature_extractor import get_time_series_features_df
@@ -15,6 +17,14 @@ cache_file = data_path + 'time_series_features.csv'
 path_weather_data = data_path + 'era5_land_t2m_pev_tp.csv'
 img_dir = data_path + "images"
 label_path = data_path + "labels.csv"
+
+# Create place to safe model if it does not exist
+model_dir = data_path + "models/" 
+if not os.path.exists(model_dir):
+    os.makedirs(model_dir)
+
+timestr = time.strftime("%Y%m%d-%H%M%S")
+model_path = model_dir + timestr + 'model.pt'
 
 # Reading the csv file
 label_df = pd.read_csv(label_path)
@@ -60,7 +70,7 @@ for epoch in range(num_epochs):
     
     if (loss < best_loss):
         best_loss = loss
-        #torch.save(model, 'current_best_model.pt')
+        torch.save(model, model_path)
 
 # Model evluation on test set
 evaluate(model=model, data_loader=test_loader, criterion=criterion, device=device, is_test=True)
