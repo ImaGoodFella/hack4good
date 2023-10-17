@@ -60,15 +60,19 @@ criterion = torch.nn.CrossEntropyLoss(weight=class_weights)
 best_loss = 1e20
 num_epochs = 20
 
-print("Starting to train model:")
-for epoch in range(num_epochs):
-    
-    train_step(model=model, data_loader=train_loader, criterion=criterion, optimizer=optimizer, epoch=epoch, device=device)    
-    loss = evaluate(model=model, data_loader=val_loader, criterion=criterion, epoch=epoch, device=device, is_test=False)
-    
-    if (loss < best_loss):
-        best_loss = loss
-        torch.save(model, model_path)
+def main():
+    print("Starting to train model:")
+    for epoch in range(num_epochs):
+        
+        train_step(model=model, data_loader=train_loader, criterion=criterion, optimizer=optimizer, epoch=epoch, device=device)    
+        loss = evaluate(model=model, data_loader=val_loader, criterion=criterion, epoch=epoch, device=device, is_test=False)
+        
+        if (loss < best_loss):
+            best_loss = loss
+            torch.save(model, model_path)
 
-# Model evluation on test set
-evaluate(model=model, data_loader=test_loader, criterion=criterion, device=device, is_test=True)
+    # Model evluation on test set
+    evaluate(model=model, data_loader=test_loader, criterion=criterion, device=device, is_test=True)
+
+if __name__ == '__main__':
+    main()
