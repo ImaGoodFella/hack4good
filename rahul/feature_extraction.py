@@ -1,34 +1,15 @@
 import numpy as np
 import pandas as pd
 import xarray as xr
-import os
 
-from tqdm import tqdm
-tqdm.pandas()
 
-# TODO
-def get_time_series_features_df(label_df, path_weather_data, use_cache=True, cache_file=None):
-    
-    if use_cache and os.path.isfile(cache_file):
-        label_df = pd.read_csv(cache_file)
-        ts_columns = [c for c in label_df.columns if c.startswith('ts_columns')]
-        return label_df, ts_columns
-    
+def get_data(path_weather_data, path_labels):
     df = pd.read_csv(path_weather_data, index_col=(0, 1, 2))
     df.index = df.index.set_levels(df.index.levels[2].astype('datetime64[ns]'), level=2)
     weather_data = df.to_xarray()
-
-    def apply_extract(row):
-        return pd.Series(extract_features(row['filename'], weather_data, label_df))
-
-    ts_df = label_df.progress_apply(apply_extract, axis=1)
-    ts_df.rename(lambda x: 'ts_columns' + str(x), axis=1)
-    ts_columns = ts_df.columns
-
-    label_df = pd.concat([label_df, ts_df], axis=1)
-    label_df.to_csv(cache_file, index=False)
-
-    return label_df, ts_columns
+    labels = pd.read_csv(path_labels)
+    labels['date'] = pd.to_datetime(labels['date'], format='mixed')
+    return (weather_data, labels)
 
 def get_coords(img_name, labels):
     row = labels[labels["filename"] == img_name]

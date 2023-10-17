@@ -9,11 +9,16 @@ from callbacks.evaluation import evaluate
 
 # Data path configuration
 data_path = "/home/rasteiger/datasets/hack4good/"
+
+# Files and Folders of interest
+cache_file = data_path + 'time_series_features.csv'
+path_weather_data = data_path + 'era5_land_t2m_pev_tp.csv'
 img_dir = data_path + "images"
 label_path = data_path + "labels.csv"
 
 # Reading the csv file
 label_df = pd.read_csv(label_path)
+label_df['date'] = pd.to_datetime(label_df['date'], format='mixed')
 
 # Setting the labels and join columns
 label_df['is_damage'] = (label_df['extent'] >= 20).astype(int)
@@ -22,7 +27,8 @@ join_column = 'filename'
 split_column = 'farmer_id'
 
 # Get time series features dataframe
-feature_df, feature_columns = get_time_series_features_df(label_df=label_df, num_features=0)
+feature_df, feature_columns = get_time_series_features_df(label_df=label_df, path_weather_data=path_weather_data, 
+                                                          use_cache=True, cache_file=cache_file)    
 
 # Define image size for transformations for loading the data
 img_size = 224
@@ -58,11 +64,3 @@ for epoch in range(num_epochs):
 
 # Model evluation on test set
 evaluate(model=model, data_loader=test_loader, criterion=criterion, device=device, is_test=True)
-
-
-
-
-
-
-
-
