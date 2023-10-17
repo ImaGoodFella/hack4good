@@ -23,7 +23,7 @@ def get_time_series_features_df(label_df, join_column, path_weather_data, use_ca
         return pd.Series(extract_features(row[join_column], weather_data, label_df, join_column))
 
     ts_df = label_df.progress_apply(apply_extract, axis=1)
-    ts_df.rename(lambda x: 'ts_columns' + str(x), axis=1)
+    ts_df = ts_df.rename(lambda x: 'ts_columns' + str(x), axis=1)
     ts_columns = ts_df.columns
 
     label_df = pd.concat([label_df, ts_df], axis=1)

@@ -5,7 +5,7 @@ import os
 
 from data.utils import get_train_val_test_dataloaders
 from data.feature_extractor import get_time_series_features_df
-from models.basic_models import get_basic_img_model
+from models.basic_models import get_basic_model
 from callbacks.training import train_step
 from callbacks.evaluation import evaluate
 
@@ -39,7 +39,6 @@ split_column = 'farmer_id'
 # Get time series features dataframe
 feature_df, feature_columns = get_time_series_features_df(label_df=label_df, path_weather_data=path_weather_data, 
                                                           join_column=join_column, use_cache=True, cache_file=cache_file)    
-
 # Define image size for transformations for loading the data
 img_size = 224
 train_loader, val_loader, test_loader = get_train_val_test_dataloaders(img_size=img_size, img_dir=img_dir, feature_df=feature_df, feature_columns=feature_columns,
@@ -49,9 +48,8 @@ train_loader, val_loader, test_loader = get_train_val_test_dataloaders(img_size=
 
 # Define Model
 num_classes = train_loader.dataset.num_classes
-num_ts_features = len(feature_columns)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = get_basic_img_model(num_classes=num_classes, num_ts_features=num_ts_features, device=device, use_multi_gpu=True)
+model = get_basic_model(num_classes=num_classes, num_ts_features=len(feature_columns), device=device, use_multi_gpu=True)
 
 # Training parameters
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-5, weight_decay=0.00)

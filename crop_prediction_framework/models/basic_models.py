@@ -25,21 +25,14 @@ class BasicModel(nn.Module):
 
     
     def forward(self, img, ts_features):
-
+        
         img_features = self.img_backbone(img)
-
-        if self.num_ts_features == 0:
-            out = self.classifier(img_features)
-        else:
-            
-            ts_features = ts_features.unsqueeze(1) if len(ts_features.shape) == 1 else ts_features
-
-            features = torch.cat([img_features, ts_features], dim=1)
-            out = self.classifier(features)
+        features = torch.cat([img_features, ts_features], dim=1)
+        out = self.classifier(features)
 
         return out
 
-def get_basic_img_model(num_classes, device, num_ts_features=0, use_multi_gpu=True):
+def get_basic_model(num_classes, num_ts_features, device, use_multi_gpu=True):
 
     model = BasicModel(num_classes, num_ts_features)
 
