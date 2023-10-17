@@ -6,14 +6,15 @@ import os
 from tqdm import tqdm
 tqdm.pandas()
 
-# TODO
 def get_time_series_features_df(label_df, path_weather_data, use_cache=True, cache_file=None):
     
+    # use cache features if saved
     if use_cache and os.path.isfile(cache_file):
         label_df = pd.read_csv(cache_file)
         ts_columns = [c for c in label_df.columns if c.startswith('ts_columns')]
         return label_df, ts_columns
     
+    # open weather data
     df = pd.read_csv(path_weather_data, index_col=(0, 1, 2))
     df.index = df.index.set_levels(df.index.levels[2].astype('datetime64[ns]'), level=2)
     weather_data = df.to_xarray()
