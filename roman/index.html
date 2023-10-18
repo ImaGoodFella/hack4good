@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Hack4Good Crop failure detection</title>
+    <link rel="stylesheet" href="static/css/style.css">
+
+<body>
+    <div id="content">
+        <div id="upload">
+            <h3>Upload</h3>
+
+            <form id="upload_form" action="/upload" method="post" enctype="multipart/form-data">
+                <div>CSV File:
+                    <input type="file" id="csv_file_input" name="csv_file" accept=".csv,.CSV"/>
+                </div>
+                <br>
+                <div>Image:
+                    <input type="file" id="image_file_input" name="img_file" accept=".jpg,.JPG,.png,.PNG,.webp,.WEBP"/>
+                </div>
+                <br>
+                <div id="copernicus_credentials">
+                    <h3>
+                        Copernicus Climate Store Credentials:
+                    </h3>
+                    <div>
+                        Username:
+                        <input type="username" id="climate_store_username" />
+                    </div>
+                    <div>
+                        Password:
+                        <input type="password" id="climate_store_password" />
+                    </div>
+                </div>
+                <br>
+                <input type="submit" id="upload_button" value="analyse" />
+            </form>
+        </div>
+        <div id="preview">
+            <h3>Preview</h3>
+            <img src="static/assets/empty_resource.svg" id="image_preview" />
+            <table id="csv_preview">
+                <tr>
+                    <!-- <th>Year</th>
+                    <th>Month</th>
+                    <th>Day</th> -->
+                    <th>Date</th>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
+                    <th>Farmer ID</th>
+                    <th>Site ID</th>
+                </tr>
+                <tr>
+                    <th id="csv_date"></th>
+                    <th id="csv_lat"></th>
+                    <th id="csv_lon"></th>
+                    <th id="farmer_id"></th>
+                    <th id="site_id"></th>
+                </tr>
+            </table>
+        </div>
+        <div id="results">
+            <h3>Results</h3>
+            <table id="results_table">
+                <tr>
+                    <th>Damage Extent</th>
+                    <th>Damage Type</th>
+                </tr>
+                <tr>
+                    <th id="damage_extent"></th>
+                    <th id="damage_type"></th>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+<script src="static/js/script.js"></script>
+
+</html>

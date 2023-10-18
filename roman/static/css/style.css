@@ -1,0 +1,28 @@
+
+#content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+#upload {
+    display: flex;
+    flex-direction: column;
+    min-width: 30%;
+}
+
+#preview {
+    display: flex;
+    flex-direction: column;
+    min-width: 30%;
+}
+
+.image_preview {
+}
+
+#results {
+    display: flex;
+    flex-direction: column;
+    min-width: 30%;
+
+}
