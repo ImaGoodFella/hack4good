@@ -42,13 +42,17 @@ def validate_csv(csv_reader : csv.reader):
 
 def analyse_image(img_file, csv_file):
     #O(n^2) please keep it to yourselves that I wrote this
+    #FIXME should handle decoding errors, might want to use https://pypi.org/project/result/ ??
     csv_text = csv_file.read().decode("utf-8")
     csv_row = None
     csv_reader = csv.reader(csv_text.split("\n"), delimiter=',')
     for row in csv_reader: 
-        if row[0].lower()== img_file.filename.lower():
+        if len(list(row)) > 0 and list(row)[0].lower()== img_file.filename.lower():
             csv_row = row
             break
+
+    if csv_row is None:
+        return None
 
     print("FOUND CSV ROW: ", csv_row)
 
@@ -87,7 +91,12 @@ def upload():
     if csv_file.filename == '':
         return 'bad request! Missing Image.', 400
 
-    return jsonify(analyse_image(img_file, csv_file)), 200
+
+    results = analyse_image(img_file, csv_file)
+    if results is None:
+        return make_response("CSV file does not contain an entry for the image file name: "+img_file.filename, 400)
+    return jsonify(results), 200
+
 
 
 @app.route("/static/<path:path>")
