@@ -21,12 +21,13 @@ document.getElementById("upload_button").addEventListener("click", async functio
     let formData = new FormData(form);
     let response = await fetch(form.action, {method: 'post', body: formData})
     console.log(response)
-    let data = await response
+    let answer = await response
     //let data = await response.json()
-    if (!response.ok) {
-        alert(await response.text())
+    if (!answer.ok) {
+        alert(await answer.text())
+        return
     }
-    data = response.json()
+    data = await answer.json()
 
     document.getElementById("csv_date").innerHTML = data["date"]
     document.getElementById("csv_lon").innerHTML = data["lon"]
