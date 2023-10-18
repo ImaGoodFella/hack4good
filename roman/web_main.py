@@ -1,20 +1,11 @@
-
 from flask import Flask, render_template, request, send_from_directory, redirect, json, make_response, Response, jsonify
 from dataclasses import dataclass
 from random import randint, choice
 from enum import Enum
-#import pandas as pd
 import csv
 import uuid
-#import pyopenssl #this is just here to mark the dependency
 
 app = Flask(__name__)
-
-#from flask_assets import Bundle, Environment
-#assets = Environment(app)
-#css = Bundle("src/main.css", output="dist/main.css")
-#assets.register("css", css)
-#css.build()
 
 class DamageType(Enum):
     Good = 0 #G
@@ -54,8 +45,6 @@ def analyse_image(img_file, csv_file):
     if csv_row is None:
         return None
 
-    print("FOUND CSV ROW: ", csv_row)
-
     #FIXME these hardcoded csv entry positions are a crime against maintainability
     return UploadResponse \
         (\
@@ -69,7 +58,7 @@ def analyse_image(img_file, csv_file):
         )
 
 
-#should the upload and analysis be separated??
+#TODO should the upload and analysis be separated??
 #@app.route("/analysis/<uuid:analysis_id>", methods=["GET"])
 #def analysis(analysis_id):
 #    return jsonify(analyse_image), 200
@@ -98,7 +87,6 @@ def upload():
     return jsonify(results), 200
 
 
-
 @app.route("/static/<path:path>")
 def static_files(path):
     return send_from_directory("static", path)
@@ -111,5 +99,5 @@ def homepage():
 
 
 if __name__ == "__main__":
-    #app.run(ssl_context='adhoc', debug=True)
+    #FIXME really should use tls if this is every hosted somehwere public
     app.run(debug=True)

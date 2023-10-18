@@ -1,27 +1,39 @@
-
-document.getElementById("image_file_input").addEventListener("change", function(e) {
-    console.log("image input change")
-    var reader = new FileReader();
+function update_preview_image() {
+    const file = document.getElementById("image_file_input").files[0]
+    if (file == null) {
+        return
+    }
+    const reader = new FileReader();
     reader.onload = function(e) {
         img = document.getElementById("image_preview");
         img.src = e.target.result;
     }
-    reader.readAsDataURL(this.files[0]);
+    reader.readAsDataURL(file);
+}
+
+document.getElementById("image_file_input").addEventListener("change", function(e) {
+    update_preview_image()
 });
 
 
-function form_element_to_formData_entry(f_e) {
 
+function update_entries(json_data, id_prefix="") {
+    for (const key in json_data) {
+        if (json_data.hasOwnProperty(key)) {
+            document.getElementById(id_prefix+key).innerHTML = json_data[key];
+        }
+    }
 }
 
 document.getElementById("upload_button").addEventListener("click", async function(e) {
     e.preventDefault()
+    update_preview_image()
     //let image = document.getElementById("image_file_input").files[0];
-    let form = document.getElementById("upload_form");
-    let formData = new FormData(form);
-    let response = await fetch(form.action, {method: 'post', body: formData})
+    const form = document.getElementById("upload_form");
+    const formData = new FormData(form);
+    const response = await fetch(form.action, {method: 'post', body: formData})
     console.log(response)
-    let answer = await response
+    const answer = await response
     //let data = await response.json()
     if (!answer.ok) {
         alert(await answer.text())
@@ -29,12 +41,5 @@ document.getElementById("upload_button").addEventListener("click", async functio
     }
     data = await answer.json()
 
-    document.getElementById("csv_date").innerHTML = data["date"]
-    document.getElementById("csv_lon").innerHTML = data["lon"]
-    document.getElementById("csv_lat").innerHTML = data["lat"]
-    document.getElementById("farmer_id").innerHTML = data["farmer_id"]
-    document.getElementById("site_id").innerHTML = data["site_id"]
-
-    document.getElementById("damage_extent").innerHTML = data["damage_extent"]+"%"
-    document.getElementById("damage_type").innerHTML = data["damage_type"]
+    update_entries(data)
 });
