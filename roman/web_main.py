@@ -1,9 +1,15 @@
 from flask import Flask, render_template, request, send_from_directory, redirect, json, make_response, Response, jsonify
 from dataclasses import dataclass
+import datetime
 from random import randint, choice
 from enum import Enum
+from pathlib import Path
 import csv
+import cdsapi #https://pypi.org/project/cdsapi/
 import uuid
+
+# https://pypi.org/project/sqlitedict/
+# https://pypi.org/project/result/
 
 app = Flask(__name__)
 
@@ -27,35 +33,49 @@ class UploadResponse():
     damage_extent : int
     damage_type : DamageType
 
+
+def get_climate_data(url : str, key : str, lat : float, lon : float, date : datetime.date):
+    # https://github.com/ecmwf/cdsapi/blob/master/cdsapi/api.py
+    debug = True
+    _usrid, secret = key.split(":")
+    c = cdsapi.Client(wait_until_complete=False, url=url, verify=True, key=key, debug=debug, quiet = not debug)
+
 def validate_csv(csv_reader : csv.reader):
     #FIXME TODO verify first col parses as date, second as lon, etc.
     return True
 
-def analyse_image(img_file, csv_file):
+def get_matching_csv_row(csv_text : str, img_filename : Path) -> UploadResponse:
     #O(n^2) please keep it to yourselves that I wrote this
     #FIXME should handle decoding errors, might want to use https://pypi.org/project/result/ ??
-    csv_text = csv_file.read().decode("utf-8")
     csv_row = None
     csv_reader = csv.reader(csv_text.split("\n"), delimiter=',')
-    for row in csv_reader: 
-        if len(list(row)) > 0 and list(row)[0].lower()== img_file.filename.lower():
+    for row in csv_reader:
+        if len(list(row)) > 0 and list(row)[0].lower()== str(img_filename).lower():
             csv_row = row
             break
 
-    if csv_row is None:
+    if csv_row is None or len(csv_row) < 6:
+        #TODO create better error message
         return None
 
     #FIXME these hardcoded csv entry positions are a crime against maintainability
-    return UploadResponse \
-        (\
-            date = csv_row[1],\
-            lon = csv_row[5],\
-            lat = csv_row[4],\
-            damage_extent = str(randint(0, 10)*10),\
-            damage_type = choice(list(DamageType)).name,\
-            farmer_id=csv_row[2],\
-            site_id =csv_row[3]\
+    return UploadResponse (
+            date = csv_row[1],
+            lon = csv_row[5],
+            lat = csv_row[4],
+            #damage should be moved away because they are part of analysis response, not upload response
+            damage_extent = str(randint(0, 10)*10),
+            damage_type = choice(list(DamageType)).name,
+            farmer_id=csv_row[2],
+            site_id =csv_row[3]
         )
+
+
+def analyse_image(img_file, csv_file, url, key):
+    csv_text = csv_file.read().decode("utf-8")
+    response = get_matching_csv_row(csv_text, Path(img_file.filename))
+    get_climate_data(url, key, response.lat, response.lon, response.date)
+    return response
 
 
 #TODO should the upload and analysis be separated??
@@ -71,17 +91,22 @@ def upload():
         return "bad request! Missing `csv_file` field in post.", 400
     if 'img_file' not in request.files:
         return "bad request! Missing `img_file` field in post.", 400
-    
+
     csv_file = request.files['csv_file']
     img_file = request.files['img_file']
 
+    #TODO if one were to use templates one could have a centralised list of acceptable file extension inserted into the form and then checked here
+    # not ".csv" == Path(csv_file.filename).suffix.lower()
     if csv_file.filename == '':
-        return 'bad request! Missing CSV.', 400
-    if csv_file.filename == '':
-        return 'bad request! Missing Image.', 400
+        return "bad request! Missing CSV.", 400
+    if img_file.filename == '':
+        return "bad request! Missing Image.", 400
 
+    #TODO would be nice if the user could choose to upload the `$HOME/.cdsapirc` file
+    url = request.form["cdsapi_url"]
+    key = request.form["cdsapi_usr_id_key_pair"]
 
-    results = analyse_image(img_file, csv_file)
+    results = analyse_image(img_file, csv_file, url, key)
     if results is None:
         return make_response("CSV file does not contain an entry for the image file name: "+img_file.filename, 400)
     return jsonify(results), 200
@@ -93,11 +118,8 @@ def static_files(path):
 
 @app.route("/")
 def homepage():
-    #return render_template("index.html")
     with open("index.html") as f:
         return f.read()
 
-
 if __name__ == "__main__":
-    #FIXME really should use tls if this is every hosted somehwere public
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)

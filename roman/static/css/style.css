@@ -1,28 +1,182 @@
+:root {
+    --primary-color: #239600;
+    --secondary-color: rgb(0, 30, 90);
+    --font-color: rgb(20, 20, 20);
+    --bg-color: white;
+    --heading-color: black;
+    --font-size: 18px;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --primary-color: #78CA00;
+        --secondary-color: lightblue;
+        --font-color: rgba(235, 235, 235);/*antiquewhite;*/
+        --bg-color: rgb(30, 30, 30);
+        --heading-color: white;
+    }
+}
+
+@media (max-width: 940px) {
+    :root {
+        --font-size: 20px;
+    }
+}
+
+html {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: var(--font-size);
+    background-color: var(--bg-color);
+    color: var(--font-color);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    color: var(--heading-color);
+}
+
+
+td, th{
+    text-align: left;
+}
+
+input,
+textarea,
+select,
+button {
+    color: var(--secondary-color);
+    border-color: var(--font-color);
+    border-style: none;
+    flex-grow: 3;
+    font-size: var(--font-size);
+}
+
+input[type="text"],
+input[type="number"],
+input[type="password"],
+input[type="username"],
+textarea {
+    background-color: var(--bg-color);
+    color: var(--font-color);
+    border-color: var(--font-color);
+    border-style: none;
+    border-bottom-style: solid;
+    padding: 1px;
+}
+
+input[type="text"]:hover,
+input[type="number"]:hover,
+input[type="password"]:hover,
+input[type="username"]:hover,
+textarea {
+    background-color: color-mix(in srgb, var(--bg-color) 70%, gray 30%);
+}
+
+input[type="file"] {
+    max-width: 70%;
+    font-size: small;
+}
+
+input::file-selector-button {
+    color: var(--bg-color);
+    background-color: var(--secondary-color);
+    border-style: none;
+    padding: 2px;
+    font-size: var(--font-size);
+}
+
+input::file-selector-button:hover {
+    background-color: color-mix(in srgb, var(--secondary-color) 70%, white 30%);
+}
+
+
+
+
+
+
+
+#upload_button {
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    border-color: transparent;
+    border-style: solid;
+    padding: 10px;
+    font-size: var(--font-size);
+    border-radius: 10px;
+    max-width: fit-content;
+}
+
+#upload_button:hover {
+    background-color: color-mix(in srgb, var(--primary-color) 70%, white 30%);
+}
+
 
 #content {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
     flex-wrap: wrap;
+}
+
+@media (max-width: 940px) {
+    #content {
+        flex-direction: column;
+        flex-wrap: nowrap;
+    }
 }
 
 #upload {
     display: flex;
     flex-direction: column;
-    min-width: 30%;
+    min-width: 20%;
 }
 
 #preview {
     display: flex;
     flex-direction: column;
-    min-width: 30%;
+    min-width: 20%;
 }
 
-.image_preview {
+
+#image_preview {
+}
+
+#csv_preview {
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
 
 #results {
     display: flex;
     flex-direction: column;
-    min-width: 30%;
+    min-width: 20%;
+}
 
+
+/* forces everything to fit onto 1 screen on devices large enough */
+@media (min-width: 940px) {
+    #upload {
+        max-width: 25%;
+    }
+    #preview {
+        max-width: 50%;
+    }
+    #results {
+        max-width: 25%;
+    }
+}
+
+.form_row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.form_row div:first-of-type {
+    min-width: 25%;
 }
