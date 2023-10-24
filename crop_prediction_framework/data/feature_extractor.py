@@ -60,11 +60,7 @@ def extract_features(img_name, weather_data, labels, join_column):
     # get relevant data
     (lon, lat) = get_coords(img_name, labels, join_column)
     date = labels[labels[join_column] == img_name].iloc[0]['date']
-<<<<<<< HEAD
-    df = weather_data.sel(latitude= lat, longitude= lon, method='nearest').sel(time = slice(date, date + pd.DateOffset(months=1))).to_dataframe()
-=======
     df = weather_data.sel(latitude= lat, longitude= lon, method='nearest').sel(time = slice(date - pd.DateOffset(days=30, second=1), date)).to_dataframe()
->>>>>>> 59186c713a3ad98da50a9c8e3d92d54ed0352642
     
     # extract features
     day = (np.sin(2 * np.pi * date.timetuple().tm_yday/365.0), np.cos(2 * np.pi * date.timetuple().tm_yday/365.0))
