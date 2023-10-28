@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 # Our implementations
 def get_train_val_test_dataloaders(img_size, img_dir, feature_df, label_column, join_column, feature_columns,
                                    split_column=None, split_sizes=[0.6, 0.2, 0.2], train_transforms=None, val_transforms=None, 
-                                   random_state=42, batch_size=32, num_workers=64, map_labels=True):
+                                   random_state=42, batch_size=32, num_workers=64):
 
     # Pytorch specific stuff (integer class labels, get number of classes)
     class_to_idx = {v:i for i, v in enumerate(feature_df[label_column].unique())} 
@@ -32,6 +32,7 @@ def get_train_val_test_dataloaders(img_size, img_dir, feature_df, label_column, 
         train_dataset = ImageDataset(img_dir=img_dir, feature_df=train_csv, label_column=label_column, join_column=join_column, transform=train_transforms, class_to_idx=class_to_idx, map_labels=map_labels)
         val_dataset = ImageDataset(img_dir=img_dir, feature_df=val_csv, label_column=label_column, join_column=join_column, transform=val_transforms, class_to_idx=class_to_idx, map_labels=map_labels)
         test_dataset = ImageDataset(img_dir=img_dir, feature_df=test_csv, label_column=label_column, join_column=join_column, transform=val_transforms, class_to_idx=class_to_idx, map_labels=map_labels)
+
     # Create normal python dataloaders
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, pin_memory=True, num_workers=num_workers)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True, pin_memory=True, num_workers=num_workers)
