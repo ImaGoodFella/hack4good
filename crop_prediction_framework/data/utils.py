@@ -10,7 +10,7 @@ from data.dataset import CustomImageDataset
 
 def get_train_val_test_dataloaders(img_size, img_dir, feature_df, label_column, join_column, feature_columns,
                                    split_column=None, split_sizes=[0.6, 0.2, 0.2], train_transforms=None, val_transforms=None, 
-                                   random_state=42, batch_size=32, num_workers=64, map_labels=True):
+                                   random_state=42, batch_size=32, num_workers=64):
 
     # Pytorch specific stuff (integer class labels, get number of classes)
     class_to_idx = {v:i for i, v in enumerate(feature_df[label_column].unique())} 
@@ -24,9 +24,9 @@ def get_train_val_test_dataloaders(img_size, img_dir, feature_df, label_column, 
     train_csv, val_csv, test_csv = split_dataframe_on_column(feature_df, split_column, split_sizes, random_state)
 
     # Get custom dataset
-    train_dataset = CustomImageDataset(img_dir=img_dir, feature_df=train_csv, feature_columns=feature_columns, label_column=label_column, join_column=join_column, transform=train_transforms, class_to_idx=class_to_idx, map_labels=map_labels)
-    val_dataset = CustomImageDataset(img_dir=img_dir, feature_df=val_csv, feature_columns=feature_columns, label_column=label_column, join_column=join_column, transform=val_transforms, class_to_idx=class_to_idx, map_labels=map_labels)
-    test_dataset = CustomImageDataset(img_dir=img_dir, feature_df=test_csv, feature_columns=feature_columns, label_column=label_column, join_column=join_column, transform=val_transforms, class_to_idx=class_to_idx, map_labels=map_labels)
+    train_dataset = CustomImageDataset(img_dir=img_dir, feature_df=train_csv, feature_columns=feature_columns, label_column=label_column, join_column=join_column, transform=train_transforms, class_to_idx=class_to_idx)
+    val_dataset = CustomImageDataset(img_dir=img_dir, feature_df=val_csv, feature_columns=feature_columns, label_column=label_column, join_column=join_column, transform=val_transforms, class_to_idx=class_to_idx)
+    test_dataset = CustomImageDataset(img_dir=img_dir, feature_df=test_csv, feature_columns=feature_columns, label_column=label_column, join_column=join_column, transform=val_transforms, class_to_idx=class_to_idx)
 
     # Create normal python dataloaders
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, pin_memory=True, num_workers=num_workers)

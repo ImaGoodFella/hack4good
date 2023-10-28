@@ -13,7 +13,7 @@ from sklearn.utils import class_weight
 
 class CustomImageDataset(Dataset):
     
-    def __init__(self, img_dir, feature_df, feature_columns, label_column, join_column, class_to_idx, transform=None, target_transform=None, map_labels=True):
+    def __init__(self, img_dir, feature_df, feature_columns, label_column, join_column, class_to_idx, transform=None, target_transform=None):
         self.img_dir = img_dir
         self.feature_df = feature_df
         self.label_name = label_column
@@ -21,7 +21,6 @@ class CustomImageDataset(Dataset):
         self.transform = transform
         self.feature_columns = feature_columns
         self.target_transform = target_transform
-        self.map_labels = map_labels
 
         # Integer class mapping: Label classes -> [0, 1, ..., num(labels) - 1] for pytorch
         self.class_to_idx = class_to_idx
@@ -39,10 +38,7 @@ class CustomImageDataset(Dataset):
         ts_features = torch.tensor(self.feature_df.iloc[idx][self.feature_columns].to_numpy(dtype=np.float32)) if len(self.feature_columns) > 0 else 1
 
         # Load Label
-        if self.map_labels:
-            label = self.class_to_idx[self.feature_df.iloc[idx][self.label_name]]
-        else:
-            label = self.feature_df.iloc[idx][self.label_name].astype(np.float32)
+        label = self.class_to_idx[self.feature_df.iloc[idx][self.label_name]]
 
         # Apply transformations
         if self.transform:

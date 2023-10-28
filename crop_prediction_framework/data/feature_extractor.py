@@ -10,9 +10,8 @@ def get_time_series_features_df(label_df, join_column, path_weather_data, use_ca
     
     # use cache features if saved
     if use_cache and os.path.isfile(cache_file):
-        ts_df = pd.read_csv(cache_file)
-        ts_columns = ts_df.columns
-        label_df = pd.concat([label_df, ts_df], axis=1)
+        label_df = pd.read_csv(cache_file)
+        ts_columns = [c for c in label_df.columns if c.startswith('ts_columns')]
         return label_df, ts_columns
     
     # open weather data
@@ -26,10 +25,10 @@ def get_time_series_features_df(label_df, join_column, path_weather_data, use_ca
     ts_df = label_df.progress_apply(apply_extract, axis=1)
     ts_df = ts_df.rename(lambda x: 'ts_columns' + str(x), axis=1)
     ts_columns = ts_df.columns
-    ts_df.to_csv(cache_file, index=False)
 
     label_df = pd.concat([label_df, ts_df], axis=1)
-    
+    label_df.to_csv(cache_file, index=False)
+
     return label_df, ts_columns
 
 def get_coords(img_name, labels, join_column):

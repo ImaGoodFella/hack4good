@@ -39,15 +39,11 @@ split_column = 'farmer_id'
 # Get time series features dataframe
 feature_df, feature_columns = get_time_series_features_df(label_df=label_df, path_weather_data=path_weather_data, 
                                                           join_column=join_column, use_cache=True, cache_file=cache_file)    
-
-# Select a subset of the data
-feature_df = feature_df[feature_df['crop_name'] == 'maize']
-
 # Define image size for transformations for loading the data
 img_size = 224
 train_loader, val_loader, test_loader = get_train_val_test_dataloaders(img_size=img_size, img_dir=img_dir, feature_df=feature_df, feature_columns=feature_columns,
                                                                        label_column=label_column, join_column=join_column, split_column=split_column,
-                                                                       split_sizes=[0.8, 0.1, 0.1], batch_size=128, num_workers=64, random_state=42)
+                                                                       split_sizes=[0.8, 0.1, 0.1], batch_size=32, num_workers=64, random_state=42)
 
 
 # Define Model
