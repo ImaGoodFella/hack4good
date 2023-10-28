@@ -10,8 +10,9 @@ def get_time_series_features_df(label_df, join_column, path_weather_data, use_ca
     
     # use cache features if saved
     if use_cache and os.path.isfile(cache_file):
-        label_df = pd.read_csv(cache_file)
-        ts_columns = [c for c in label_df.columns if c.startswith('ts_columns')]
+        ts_df = pd.read_csv(cache_file)
+        ts_columns = ts_df.columns
+        label_df = pd.concat([label_df, ts_df], axis=1)
         return label_df, ts_columns
     
     # open weather data
@@ -25,10 +26,10 @@ def get_time_series_features_df(label_df, join_column, path_weather_data, use_ca
     ts_df = label_df.progress_apply(apply_extract, axis=1)
     ts_df = ts_df.rename(lambda x: 'ts_columns' + str(x), axis=1)
     ts_columns = ts_df.columns
+    ts_df.to_csv(cache_file, index=False)
 
     label_df = pd.concat([label_df, ts_df], axis=1)
-    label_df.to_csv(cache_file, index=False)
-
+    
     return label_df, ts_columns
 
 def get_coords(img_name, labels, join_column):
@@ -54,7 +55,7 @@ def get_spells(data,param:str,value,higher:bool,spell:int):
         z = np.diff(np.append(-1, i))
         res = z[d[i]==higher] 
         numspells = sum(k >= spell for k in res)
-        return (numspells > 0)
+        return (numspells)
 
 def extract_features(img_name, weather_data, labels, join_column):
     # get relevant data
@@ -64,7 +65,6 @@ def extract_features(img_name, weather_data, labels, join_column):
     
     # extract features
     day = (np.sin(2 * np.pi * date.timetuple().tm_yday/365.0), np.cos(2 * np.pi * date.timetuple().tm_yday/365.0))
-    #spells = get_spells(df,'t2m',300,1,5)
     temperature = (df["t2m"].values.max(), df["t2m"].values.min(), np.median(df["t2m"].values))
     precipitation = (df["tp"].values.max(), np.median(df["tp"].values), df["tp"].values[:168].sum(), df["tp"].values[:336].sum(), df["tp"].values.sum())
     evaporation = (df["pev"].values.max(), np.median(df["pev"].values), df["pev"].values[:168].sum(), df["pev"].values[:336].sum(), df["pev"].values.sum())

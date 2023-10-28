@@ -13,7 +13,7 @@ from sklearn.utils import class_weight
 # Custom dataloader classs for images and time-series with corresponding labels such that pytorch can work with the data
 class ImageTimeSeriesDataset(Dataset):
     
-    def __init__(self, img_dir, feature_df, feature_columns, label_column, join_column, class_to_idx, transform=None, target_transform=None):
+    def __init__(self, img_dir, feature_df, feature_columns, label_column, join_column, class_to_idx, transform=None, target_transform=None, map_labels=True):
         self.img_dir = img_dir
         self.feature_df = feature_df
         self.label_name = label_column
@@ -21,7 +21,8 @@ class ImageTimeSeriesDataset(Dataset):
         self.transform = transform
         self.feature_columns = feature_columns
         self.target_transform = target_transform
-
+        self.map_labels = map_labels
+        
         # Integer class mapping: Label classes -> [0, 1, ..., num(labels) - 1] for pytorch
         self.class_to_idx = class_to_idx
         self.num_classes = len(list(class_to_idx.values()))
