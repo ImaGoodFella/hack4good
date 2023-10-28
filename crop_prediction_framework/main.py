@@ -9,6 +9,16 @@ from models.basic_models import get_basic_model
 from callbacks.training import train_step
 from callbacks.evaluation import evaluate
 
+# System configs
+if not torch.cuda.is_available():
+    raise NotImplementedError('GPU is required for training')
+
+device = torch.device("cuda")
+num_workers = os.cpu_count() // 2
+num_gpus = torch.cuda.device_count()
+batch_size = 32 * num_gpus
+random_state = 42
+
 # Data path configuration
 data_path = "/home/rasteiger/datasets/hack4good/"
 
@@ -47,13 +57,12 @@ feature_df = feature_df[feature_df['crop_name'] == 'maize']
 img_size = 224
 train_loader, val_loader, test_loader = get_train_val_test_dataloaders(img_size=img_size, img_dir=img_dir, feature_df=feature_df, feature_columns=feature_columns,
                                                                        label_column=label_column, join_column=join_column, split_column=split_column,
-                                                                       split_sizes=[0.8, 0.1, 0.1], batch_size=128, num_workers=64, random_state=42)
+                                                                       split_sizes=[0.8, 0.1, 0.1], batch_size=batch_size, num_workers=num_workers, random_state=random_state)
 
 
 # Define Model
 num_classes = train_loader.dataset.num_classes
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = get_basic_model(num_classes=num_classes, num_ts_features=len(feature_columns), device=device, use_multi_gpu=True)
+model = get_basic_model(num_classes=num_classes, num_ts_features=len(feature_columns), device=device, use_multi_gpu=num_gpus > 1)
 
 # Training parameters
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-5, weight_decay=0.00)
