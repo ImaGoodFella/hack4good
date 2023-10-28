@@ -14,8 +14,8 @@ def train_step(model, data_loader, criterion, optimizer, device, epoch=0, print_
     
     for i, (img, ts_features, label) in enumerate(tqdm(data_loader)):
         img, label = img.to(device), label.to(device)
-        optimizer.zero_grad()
         
+        optimizer.zero_grad()
         output = model(img, ts_features)
         loss = criterion(output, label)
         loss.backward()
