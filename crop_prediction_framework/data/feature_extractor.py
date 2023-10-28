@@ -54,7 +54,7 @@ def get_spells(data,param:str,value,higher:bool,spell:int):
         z = np.diff(np.append(-1, i))
         res = z[d[i]==higher] 
         numspells = sum(k >= spell for k in res)
-        return (numspells)
+        return (numspells > 0)
 
 def extract_features(img_name, weather_data, labels, join_column):
     # get relevant data
@@ -64,6 +64,7 @@ def extract_features(img_name, weather_data, labels, join_column):
     
     # extract features
     day = (np.sin(2 * np.pi * date.timetuple().tm_yday/365.0), np.cos(2 * np.pi * date.timetuple().tm_yday/365.0))
+    #spells = get_spells(df,'t2m',300,1,5)
     temperature = (df["t2m"].values.max(), df["t2m"].values.min(), np.median(df["t2m"].values))
     precipitation = (df["tp"].values.max(), np.median(df["tp"].values), df["tp"].values[:168].sum(), df["tp"].values[:336].sum(), df["tp"].values.sum())
     evaporation = (df["pev"].values.max(), np.median(df["pev"].values), df["pev"].values[:168].sum(), df["pev"].values[:336].sum(), df["pev"].values.sum())
