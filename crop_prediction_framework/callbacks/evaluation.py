@@ -22,10 +22,9 @@ def evaluate(model, data_loader, criterion, device, is_test=False, epoch=0, prin
        
             output = model(img, ts_features)
             loss = criterion(output, label)
-            
-            pred = torch.argmax(output, dim=1)
 
             if print_metrics:
+                pred = torch.argmax(output, dim=1)
                 pred_labels.append(pred.detach().cpu().numpy())
                 true_labels.append(label.detach().cpu().numpy())
 
