@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 # Our implementations
 def get_train_val_test_dataloaders(img_size, img_dir, feature_df, label_column, join_column, feature_columns,
                                    split_column=None, split_sizes=[0.6, 0.2, 0.2], train_transforms=None, val_transforms=None, 
-                                   random_state=42, batch_size=32, num_workers=64):
+                                   random_state=42, batch_size=32, num_workers=64, map_labels=True):
 
     # Pytorch specific stuff (integer class labels, get number of classes)
     class_to_idx = {v:i for i, v in enumerate(feature_df[label_column].unique())} 
