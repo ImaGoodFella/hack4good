@@ -10,7 +10,7 @@ from callbacks.training import train_step
 from callbacks.evaluation import evaluate
 
 # Data path configuration
-data_path = "/home/rasteiger/datasets/hack4good/"
+data_path = "../data/"
 
 # Files and Folders of interest
 cache_file = data_path + 'time_series_features.csv'

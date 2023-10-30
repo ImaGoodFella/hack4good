@@ -10,13 +10,17 @@ from callbacks.training import train_pure_step
 from callbacks.evaluation import pure_evaluate
 
 # System configs
+if not torch.cuda.is_available():
+    raise NotImplementedError('GPU is required for training')
+
+device = torch.device("cuda")
 num_workers = os.cpu_count() // 2
 num_gpus = torch.cuda.device_count()
 batch_size = 32 * num_gpus
 random_state = 42
 
 # Data path configuration
-data_path = "/home/rasteiger/datasets/hack4good/"
+data_path = "../data/"
 
 # Files and Folders of interest
 cache_file = data_path + 'time_series_features.csv'
@@ -30,7 +34,7 @@ if not os.path.exists(model_dir):
     os.makedirs(model_dir)
 
 timestr = time.strftime("%Y%m%d-%H%M%S")
-model_path = model_dir + timestr + 'model.pt'
+model_path = model_dir + timestr + '-pure_img_model.pt'
 
 # Reading the csv file
 label_df = pd.read_csv(label_path)
@@ -54,7 +58,6 @@ train_loader, val_loader, test_loader = get_train_val_test_dataloaders(img_size=
 
 # Define Model
 num_classes = train_loader.dataset.num_classes
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = get_pure_img_model(num_classes=num_classes, device=device, use_multi_gpu=num_gpus > 1)
 
 # Training parameters

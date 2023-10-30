@@ -18,7 +18,7 @@ dependencies:
   - ncurses=6.4=hcb278e6_0
   - openssl=3.1.3=hd590300_0
   - pip=23.2.1=pyhd8ed1ab_0
-  - python=3.8.18=hd12c33a_0_cpython
+  - python=3.9.18
   - readline=8.2=h8228510_1
   - setuptools=68.2.2=pyhd8ed1ab_0
   - tk=8.6.13=h2797004_0
@@ -36,9 +36,13 @@ dependencies:
       - backcall==0.2.0
       - beautifulsoup4==4.12.2
       - bleach==6.1.0
+      - blinker==1.6.3
+      - cdsapi==0.6.1
       - certifi==2022.12.7
       - cffi==1.16.0
+      - cftime==1.6.3
       - charset-normalizer==2.1.1
+      - click==8.1.7
       - comm==0.1.4
       - contourpy==1.1.1
       - cycler==0.12.1
@@ -49,6 +53,7 @@ dependencies:
       - executing==2.0.0
       - fastjsonschema==2.18.1
       - filelock==3.9.0
+      - flask==3.0.0
       - fonttools==4.43.1
       - fqdn==1.5.1
       - fsspec==2023.4.0
@@ -60,6 +65,7 @@ dependencies:
       - ipython-genutils==0.2.0
       - ipywidgets==8.1.1
       - isoduration==20.11.0
+      - itsdangerous==2.1.2
       - jedi==0.19.1
       - jinja2==3.1.2
       - joblib==1.3.2
@@ -89,6 +95,7 @@ dependencies:
       - nbconvert==7.9.2
       - nbformat==5.9.2
       - nest-asyncio==1.5.8
+      - netcdf4==1.6.4
       - networkx==3.0
       - notebook==7.0.5
       - notebook-shim==0.2.3
@@ -136,9 +143,9 @@ dependencies:
       - threadpoolctl==3.2.0
       - tinycss2==1.2.1
       - tomli==2.0.1
-      - torch==2.1.0+cu118
-      - torchaudio==2.1.0+cu118
-      - torchvision==0.16.0+cu118
+      - torch==2.1.0
+      - torchaudio==2.1.0
+      - torchvision==0.16.0
       - tornado==6.3.3
       - tqdm==4.66.1
       - traitlets==5.11.2
@@ -152,6 +159,7 @@ dependencies:
       - webcolors==1.13
       - webencodings==0.5.1
       - websocket-client==1.6.4
+      - werkzeug==3.0.0
       - widgetsnbextension==4.0.9
       - xarray==2023.1.0
       - zipp==3.17.0
