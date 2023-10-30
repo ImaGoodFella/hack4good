@@ -20,7 +20,7 @@ batch_size = 32 * num_gpus
 random_state = 42
 
 # Data path configuration
-data_path = "/home/rasteiger/datasets/hack4good/"
+data_path = "../data/"
 
 # Files and Folders of interest
 cache_file = data_path + 'time_series_features.csv'
