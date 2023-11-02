@@ -75,9 +75,11 @@ wrapper = ClassificationWrapper(model=model, learning_rate=1e-5, weight_decay=0.
 # Model training
 
 def main():
+    
     logger = logger=pl_loggers.TensorBoardLogger(save_dir=data_path)
     trainer = pl.Trainer(accelerator="gpu", devices=num_gpus, logger=logger, max_epochs=100, callbacks=callbacks)
     trainer.fit(wrapper, train_dataloaders=train_loader, val_dataloaders=val_loader)
+    trainer.test(wrapper, dataloaders=test_loader)
 
 if __name__ == '__main__':
     main()

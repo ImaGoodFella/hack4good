@@ -77,7 +77,7 @@ class ClassificationWrapper(pl.LightningModule):
 
         preds = torch.argmax(output, dim=1)
         for name, metric in metric_dict.items():
-            metric.update(preds, labels)
+            metric.update(preds.detach(), labels.detach())
             self.log(f'{stage_name}/{name}', metric, on_epoch=True, on_step=False, logger=True, sync_dist=True)
         
         return loss
