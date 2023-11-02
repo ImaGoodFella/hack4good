@@ -71,13 +71,12 @@ class_weights = train_loader.dataset.calculate_class_weights().to(device)
 criterion = torch.nn.CrossEntropyLoss(weight=class_weights)
 callbacks = [EarlyStopping(monitor="val/loss", min_delta=0.00, patience=3, verbose=False, mode="min")]
 wrapper = ClassificationWrapper(model=model, learning_rate=1e-5, weight_decay=0.00, loss=criterion, num_classes=num_classes)
+logger = logger=pl_loggers.TensorBoardLogger(save_dir=data_path, name='lightning_logs', version=None)
+trainer = pl.Trainer(accelerator="gpu", devices=num_gpus, logger=logger, max_epochs=100, callbacks=callbacks)
 
 # Model training
-
 def main():
     
-    logger = logger=pl_loggers.TensorBoardLogger(save_dir=data_path)
-    trainer = pl.Trainer(accelerator="gpu", devices=num_gpus, logger=logger, max_epochs=100, callbacks=callbacks)
     trainer.fit(wrapper, train_dataloaders=train_loader, val_dataloaders=val_loader)
     trainer.test(wrapper, dataloaders=test_loader)
 
