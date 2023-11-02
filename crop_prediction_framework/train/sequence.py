@@ -67,15 +67,21 @@ class ClassificationWrapper(pl.LightningModule):
     def forward(self, *inputs : Tuple[torch.Tensor, ...]) -> torch.Tensor:
         return self.model(*inputs)
     
+    def get_pred(self, outputs):
+        if hasattr(self.model, "predict"):
+            return self.model.predict(outputs)
+        else:
+            return torch.argmax(outputs, dim=1)
+    
     def standard_step(self, batch, batch_idx, stage_name, metric_dict):
 
         *inputs, labels = batch
-        output = self.model(*inputs)
-        loss = self.loss(output, labels)
+        outputs = self.model(*inputs)
+        loss = self.loss(outputs, labels)
 
         self.log(f"{stage_name}/loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
 
-        preds = torch.argmax(output, dim=1)
+        preds = self.get_pred(outputs)
         for name, metric in metric_dict.items():
             metric.update(preds.detach(), labels.detach())
             self.log(f'{stage_name}/{name}', metric, on_epoch=True, on_step=False, logger=True, sync_dist=True)
