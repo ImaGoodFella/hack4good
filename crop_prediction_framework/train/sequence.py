@@ -46,7 +46,7 @@ class ClassificationWrapper(pl.LightningModule):
         
         # Set arguments for metrics depending if we have a binary or multi classification problem
         if self.num_classes == 2:
-            args = {'task' : 'binary', 'average' : 'macro'}
+            args = {'task' : 'binary'}
         else:
             args = {'task' : 'multiclass', 'average' : 'macro'}
         

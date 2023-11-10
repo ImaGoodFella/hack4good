@@ -16,7 +16,7 @@ if not torch.cuda.is_available():
 device = torch.device("cuda")
 num_workers = os.cpu_count() // 2
 num_gpus = torch.cuda.device_count()
-batch_size = 32 * num_gpus
+batch_size = 16 * num_gpus
 random_state = 42
 
 # Data path configuration
@@ -62,7 +62,7 @@ num_classes = train_loader.dataset.num_classes
 model = get_basic_model(num_classes=num_classes, num_ts_features=len(feature_columns), device=device, use_multi_gpu=num_gpus > 1)
 
 # Training parameters
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-5, weight_decay=0.00)
+optimizer = torch.optim.AdamW(model.parameters(), lr=1e-5, weight_decay=0.001)
 class_weights = train_loader.dataset.calculate_class_weights().to(device)
 criterion = torch.nn.CrossEntropyLoss(weight=class_weights)
 
