@@ -3,7 +3,7 @@ import numpy as np
 import xgboost as xgb
 from sklearn.model_selection import train_test_split
 from sklearn import preprocessing 
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import accuracy_score, classification_report, f1_score
 label_encoder = preprocessing.LabelEncoder() 
 
 random_state = 42
@@ -16,9 +16,9 @@ time_series_features_path = data_path + "tf_features_full_narm.csv"
 label_path = data_path + "labels.csv"
 relevant_features_path = data_path + "relevant_features.csv"
 
-
 data = pd.read_csv(time_series_features_path)
 labels = pd.read_csv(label_path)
+labels['damage'] = (labels['extent'] >= 20).astype(int)
 relevant = pd.read_csv(relevant_features_path)['x'].values.tolist()
 relevant.append('damage')
 
@@ -33,13 +33,17 @@ test_x = test.drop(['damage'], axis=1)
 test_y = test['damage']
 
 
-model = xgb.XGBClassifier()
+model = xgb.XGBClassifier(device="cuda")
 model.fit(train_x, train_y)
 
 predictions = label_encoder.inverse_transform(model.predict(test_x))
+
 #Calculating accuracy
 accuracy = accuracy_score(test_y, predictions)
+f1 = f1_score(test_y, predictions, average='macro')
 print("Accuracy:", accuracy)
+print("f1_score:", f1)
+
 print("\nClassification Report:")
 print(classification_report(test_y, predictions))
 
