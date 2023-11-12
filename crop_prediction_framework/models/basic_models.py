@@ -8,18 +8,18 @@ class BasicModel(nn.Module):
         self.num_ts_features = num_ts_features
 
         self.img_backbone = torchvision.models.convnext_tiny(weights='DEFAULT')
+        final_layer_size = self.img_backbone.classifier[2].in_features
         self.img_backbone.classifier[2] = nn.Identity()
 
         self.classifier = nn.Sequential(
-            nn.Linear(768 + num_ts_features, 512),
-            nn.ELU(),
-            nn.Dropout(p=0.5),
-            nn.Linear(512, 512),
-            nn.ELU(), 
-            nn.Dropout(p=0.5),
-            nn.Linear(512, 256),
-            nn.ELU(),
-            nn.Dropout(p=0.25),
+            nn.Linear(final_layer_size + num_ts_features, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(),
+            nn.Dropout(p=0.85),
+            nn.Linear(256, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(),
+            nn.Dropout(p=0.75),
             nn.Linear(256, num_classes),
         )
 
