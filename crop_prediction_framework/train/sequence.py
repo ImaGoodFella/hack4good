@@ -98,7 +98,7 @@ class ClassificationWrapper(pl.LightningModule):
         return self.standard_step(batch, batch_idx, 'test', self.eval_metrics)
     
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(
+        optimizer = torch.optim.AdamW(
             self.parameters(), lr=self.learning_rate, weight_decay=self.weight_decay
         )
         return optimizer
