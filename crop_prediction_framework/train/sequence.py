@@ -102,4 +102,9 @@ class ClassificationWrapper(pl.LightningModule):
             self.parameters(), lr=self.learning_rate, weight_decay=self.weight_decay
         )
         return optimizer
+    
+    def predict_step(self, batch, batch_idx):
+        *inputs, labels = batch
+        outputs = self.model(*inputs)
 
+        return outputs, labels
