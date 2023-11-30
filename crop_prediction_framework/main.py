@@ -154,7 +154,7 @@ def main():
     logger, callbacks = get_trainer_args(is_multi_modal, ckpt_path, task)
     
     # Define trainer
-    trainer = pl.Trainer(accelerator="gpu", devices=num_gpus, logger=logger, max_epochs=1, callbacks=callbacks)
+    trainer = pl.Trainer(accelerator="gpu", devices=num_gpus, logger=logger, max_epochs=100, callbacks=callbacks)
 
     # Finally fit model if not given a checkpoint
     if ckpt_path is None:
