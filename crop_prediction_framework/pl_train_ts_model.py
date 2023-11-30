@@ -36,7 +36,7 @@ label_df = pd.read_csv(label_path)
 label_df['date'] = pd.to_datetime(label_df['date'], format='mixed')
 
 # Setting the labels and join columns
-label_df['is_damage'] = (label_df['extent'] >= 20).astype(int)
+label_df['is_damage'] = label_df['damage']#(label_df['extent'] >= 20).astype(int)
 label_column = 'is_damage'
 join_column = 'filename'
 split_column = 'farmer_id'
@@ -50,6 +50,10 @@ relevant = pd.read_csv(relevant_features_path)['x'].values.tolist()
 feature_df = feature_df[feature_df.columns.intersection(relevant)]
 feature_columns = feature_df.columns
 feature_df = pd.concat([label_df, feature_df], axis=1)
+
+# Filter out damage types and plant types that occur rarely
+feature_df = feature_df[~feature_df['damage'].isin(['WN', 'FD'])]
+feature_df = feature_df[feature_df['crop_name'] == 'maize'] 
 
 #feature_df = feature_df.sample(1000)
 # Define image size for transformations for loading the data
@@ -79,7 +83,7 @@ writer = CustomWriter(
     output_file=data_path + 'outputs/ts_convnext_tiny.pkl'
 )
 
-early_stop = EarlyStopping(monitor="val/F1Score", min_delta=0.00, patience=5, verbose=False, mode="max")
+early_stop = EarlyStopping(monitor="val/F1Score", min_delta=0.00, patience=10, verbose=False, mode="max")
 
 callbacks = [early_stop, checkpoint_callback, writer]
 

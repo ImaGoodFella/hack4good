@@ -26,8 +26,6 @@ random_state = 42
 data_path = "../data/"
 
 # Files and Folders of interest
-cache_file = data_path + 'time_series_features.csv'
-path_weather_data = data_path + 'era5_land_t2m_pev_tp.csv'
 img_dir = data_path + "images"
 label_path = data_path + "labels.csv"
 
@@ -36,15 +34,21 @@ label_df = pd.read_csv(label_path)
 label_df['date'] = pd.to_datetime(label_df['date'], format='mixed')
 
 # Setting the labels and join columns
-label_df['is_damage'] = (label_df['extent'] >= 20).astype(int)
+label_df['is_damage'] = label_df['damage']#(label_df['extent'] >= 20).astype(int)
 label_column = 'is_damage'
 join_column = 'filename'
 split_column = 'farmer_id'
 
+feature_df = label_df
+
+# Filter out damage types and plant types that occur rarely
+feature_df = feature_df[~feature_df['damage'].isin(['WN', 'FD'])]
+feature_df = feature_df[feature_df['crop_name'] == 'maize'] 
+
 # Define image size for transformations for loading the data
 img_size = 224
 train_loader, val_loader, test_loader = get_train_val_test_dataloaders(
-    img_size=img_size, img_dir=img_dir, feature_df=label_df, feature_columns=None,
+    img_size=img_size, img_dir=img_dir, feature_df=feature_df, feature_columns=None,
     label_column=label_column, join_column=join_column, split_column=split_column,
     split_sizes=[0.8, 0.1, 0.1], batch_size=batch_size, num_workers=num_workers, random_state=random_state
 )
@@ -67,7 +71,7 @@ writer = CustomWriter(
     output_file=data_path + 'outputs/convnext_tiny.pkl'
 )
 
-early_stop = EarlyStopping(monitor="val/F1Score", min_delta=0.00, patience=5, verbose=False, mode="max")
+early_stop = EarlyStopping(monitor="val/F1Score", min_delta=0.00, patience=10, verbose=False, mode="max")
 
 # Training parameters
 class_weights = train_loader.dataset.calculate_class_weights().to(device)

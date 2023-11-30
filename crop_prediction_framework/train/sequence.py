@@ -48,7 +48,7 @@ class ClassificationWrapper(pl.LightningModule):
         if self.num_classes == 2:
             args = {'task' : 'binary'}
         else:
-            args = {'task' : 'multiclass', 'average' : 'macro'}
+            args = {'task' : 'multiclass', 'average' : 'macro', 'num_classes' : self.num_classes}
         
         self.train_metrics = nn.ModuleDict({
             "F1Score": F1Score(**args),
