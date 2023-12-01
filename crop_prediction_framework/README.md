@@ -77,8 +77,12 @@ python3 main.py --task extent --is_multi_modal False --ckpt_path ../data/checkpo
 ## Analyzing the results 
 
 The results of the test dataset can be analyzed using the `result_analysis.ipynb` notebook. 
+Given results of the model in a dictionary as generated automatically by our framework, this notebook allows for a more in-depth analysis of the model's performance.
+It visualizes basic metrics such as accuracy and f1 score, the calibration plot and the confusion matrix.
+Finally, it can list the best and worst predictions and visualize their corresponding images
 
-TODO: Flavia
+Caution: any changes in the training process such as the split fractions or seed need to be reflected in the notebook!
+
 
 ## Proof of concept website for deployment
 
