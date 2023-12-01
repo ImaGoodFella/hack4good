@@ -44,4 +44,4 @@ if(!file.exists(sFile)) {
 ## Get all features with non zero coefficients
 
 relevant.features <- extract.coef(cv.lasso)$Coefficient[-1]
-write.csv(relevant.features, "data/relevant_featurestest.csv")
+write.csv(relevant.features, "data/relevant_features.csv")
