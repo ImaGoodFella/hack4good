@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 setwd(utils::getSrcDirectory(function(){})[1])
 setwd("..")
 
