@@ -7,8 +7,13 @@ class ImgModel(nn.Module):
         self.num_classes = num_classes
 
         self.img_backbone = torchvision.models.convnext_tiny(weights='DEFAULT')
-        final_layer_size = self.img_backbone.classifier[2].in_features
-        self.img_backbone.classifier[2] = nn.Identity()
+
+        try:
+            final_layer_size = self.img_backbone.classifier[2].in_features
+            self.img_backbone.classifier[2] = nn.Identity()
+        except:
+            final_layer_size = self.img_backbone.fc.in_features
+            self.img_backbone.fc = nn.Identity()     
 
         self.classifier = nn.Sequential(
             nn.Linear(final_layer_size, 256),
@@ -29,11 +34,6 @@ class ImgModel(nn.Module):
 
         return out
 
-def get_pure_img_model(num_classes, device, use_multi_gpu=True):
-
+def get_pure_img_model(num_classes):
     model = ImgModel(num_classes)
-
-    if use_multi_gpu:
-        model = torch.nn.DataParallel(model)
-
-    return model.to(device)
+    return model

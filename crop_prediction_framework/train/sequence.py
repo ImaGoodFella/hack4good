@@ -48,7 +48,7 @@ class ClassificationWrapper(pl.LightningModule):
         if self.num_classes == 2:
             args = {'task' : 'binary'}
         else:
-            args = {'task' : 'multiclass', 'average' : 'macro'}
+            args = {'task' : 'multiclass', 'average' : 'macro', 'num_classes' : self.num_classes}
         
         self.train_metrics = nn.ModuleDict({
             "F1Score": F1Score(**args),
@@ -102,4 +102,9 @@ class ClassificationWrapper(pl.LightningModule):
             self.parameters(), lr=self.learning_rate, weight_decay=self.weight_decay
         )
         return optimizer
+    
+    def predict_step(self, batch, batch_idx):
+        *inputs, labels = batch
+        outputs = self.model(*inputs)
 
+        return outputs, labels
