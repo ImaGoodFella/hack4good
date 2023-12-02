@@ -12,11 +12,11 @@ We assume that the data is stored in a `data/` folder in the **root** directory 
 
 ## Extracting the ts-fresh time series features
 
-First we need to extract the time-series features with tsfresh. After we executed this, you should have two additional files in the **root** `data/` folder: `ts_features_full_narm.csv` and `relevant_features.csv`. Note that feature extraction may take a long time (~20 min per 4000 datapoints). 
+First we need to extract the time-series features with tsfresh. After we executed this, you should have two additional files in the **root** `data/` folder: `ts_features_full_narm.csv` and `relevant_features.csv`. Note that feature extraction may take a long time (~20 min per 4000 datapoints). Make sure to set the working directory in the R file correctly and to have the packages dplyr, glmnet and coefplot installed. 
 
 ```
 python3 jan/ts_fresh_feature_extraction.py
-TODO: Figure out how to run R scripts from the command line 
+R CMD BATCH jan/relevant_features.R result.out
 ```
 
 ## Training a pure image model
