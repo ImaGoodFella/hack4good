@@ -66,9 +66,9 @@ jupyter-notebook --port 8123 --no-browser
 
 ## Running inference
 
-Assuming you trained a model and you saved the checkpoint in a specific path. Adding `--ckpt_path` flag will only evalute the model.
+Assuming you trained a model and you saved the checkpoint in a specific path. Adding `--ckpt_path` flag will only evaluate the model.
 
-Assuming you have trained a image model for the extent task, and it is stored in `../data/checkpoints/convnext_tiny/extent/model-epoch=00-val/F1Score=0.64.ckpt`, you can evaluate your model and create predictions with the following command
+Assuming you have trained an image model for the extent task, and it is stored in `../data/checkpoints/convnext_tiny/extent/model-epoch=00-val/F1Score=0.64.ckpt`, you can evaluate your model and create predictions with the following command
 
 ```
 python3 main.py --task extent --is_multi_modal False --ckpt_path ../data/checkpoints/convnext_tiny/extent/model-epoch=00-val/F1Score=0.64.ckpt
@@ -87,4 +87,25 @@ Caution: any changes in the training process such as the split fractions or seed
 
 ## Proof of concept website for deployment
 
-TODO: Roman
+### Overview
+
+A simple web dashboard to test single images was also made. It can be started with `cd crop_prediction_framework/dashboard && python3 web_main.py`.
+It should then be accessible on `localhost:5000`. Note that it should not be made publicly available in its current state.
+
+Before processing an image there are a few inputs required:
+- A csv file
+- an image upload
+- the copernicus climate store api information
+
+The csv file should contain the same columns as the csv that was provided. 
+The copernicus climate store access information are available here if you are logged in: [https://cds.climate.copernicus.eu/api-how-to](cds.climate.copernicus.eu/api-how-to)
+
+Clicking the button should then run the analysis. If climate data is missing for the given image it gets downloaded and cached locally. This downloading can take quite a while, even for little actual data.
+
+### Extensions
+
+- There is currently no way to select another model, but at least the selection of the `multi-modal` or `picture-only` model would be nice.
+- The upload requiring a `csv` with all the information might be unwieldy for your workflow and an alternative input of the fields alone might be more user-friendly.
+
+
+
